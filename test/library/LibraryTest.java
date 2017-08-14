@@ -1,9 +1,10 @@
 package library;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,16 +98,14 @@ public class LibraryTest {
      * buy() tests
      **************/
     @Test
-    public void testBuy() {
+    public void testBuyNewBookInGoodCondition() {
         String title = "Darwin's Radio";
         List<String> authors = Arrays.asList("Greg Bear");
         int year = 2000;
         Book book = new Book(title, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         BookCopy boughtCopy = library.buy(book);
 
-        assertEquals("returned copy of book is same as original copy, " copy, boughtCopy);
         assertEquals("bought copy is GOOD",BookCopy.Condition.GOOD, boughtCopy.getCondition());
     }
     /**************
@@ -118,9 +117,8 @@ public class LibraryTest {
         List<String> authors = Arrays.asList("Greg Bear");
         int year = 2000;
         Book book = new Book(title, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
-        library.buy(book);
+        Library library = makeLibrary();
+        BookCopy copy = library.buy(book);
         library.checkout(copy);
         assertFalse("Darwin's radio is checked out", library.isAvailable(copy));
     }
@@ -133,8 +131,9 @@ public class LibraryTest {
         List<String> authors = Arrays.asList("Greg Bear");
         int year = 2000;
         Book book = new Book(title, authors, year);
+        Library library = makeLibrary();
         Set<BookCopy> copies = library.allCopies(book);
-        assertTrue("library has no copies of Darwin", copes.isEmpty());
+        assertTrue("library has no copies of Darwin", copies.isEmpty());
     }
     @Test
     public void testAllCopiesMultipleCopies() {
@@ -143,15 +142,16 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
 
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
-        library.buy(book);
-        library.buy(book);
-        library.buy(book);
+        Library library = makeLibrary();
+        BookCopy copy1 = library.buy(book);
+        BookCopy copy2 = library.buy(book);
+        BookCopy copy3 = library.buy(book);
         Set<BookCopy> copies = library.allCopies(book);
 
         assertEquals("there are 3 copies of Darwin", 3, copies.size());
-        assertTrue("library has Darwin", copies.contains(copy));
+        assertTrue("library has Darwin copy 1", copies.contains(copy1));
+        assertTrue("library has Darwin copy 2", copies.contains(copy2));
+        assertTrue("library has Darwin copy 3", copies.contains(copy3));
     }
     /*************************
      * availableCopies() tests
@@ -163,15 +163,16 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
 
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
-        library.buy(book);
-        library.buy(book);
-        library.buy(book);
-        Set<BookCopy> copies = library.allCopies(book);
+        Library library = makeLibrary();
+        BookCopy copy1 = library.buy(book);
+        BookCopy copy2 = library.buy(book);
+        BookCopy copy3 = library.buy(book);
+        library.checkout(copy1);
+        library.checkout(copy2);
+        library.checkout(copy3);
+        Set<BookCopy> copies = library.availableCopies(book);
 
-        assertEquals("there are 3 copies of Darwin", 3, copies.size());
-        assertTrue("library has Darwin", copies.contains(copy));
+        assertEquals("there are 0 available copies", 0, copies.size());
     }
     /*************************
      * find() tests
@@ -183,8 +184,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
 
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         List<Book> matchedBooks = library.find("non-existent book");
         assertTrue("expected no match", matchedBooks.isEmpty());
     }
@@ -195,8 +195,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
 
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book);
         library.buy(book);
@@ -210,8 +209,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
 
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book);
         library.buy(book);
@@ -228,8 +226,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title2, authors2, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book);
@@ -244,11 +241,9 @@ public class LibraryTest {
         List<String> authors = Arrays.asList("Greg Bear");
         int year = 2000;
         Book book = new Book(title, authors, year);
-
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
-        library.buy(book2);
+        library.buy(book);
         library.buy(book);
         List<Book> matchedBooks = library.find("Greg Bear");
         assertEquals("expected 1 match", 1, matchedBooks.size());
@@ -262,8 +257,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title2, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book);
@@ -280,8 +274,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title2, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book);
@@ -298,8 +291,7 @@ public class LibraryTest {
         int year = 2000;
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title2, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book);
@@ -318,8 +310,7 @@ public class LibraryTest {
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title, authors, year2);
         Book book3 = new Book(title, authors, year3);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book3);
@@ -339,8 +330,7 @@ public class LibraryTest {
         Book book = new Book(title, authors, year);
         Book book2 = new Book(title2, authors, year);
         Book book3 = new Book(title3, authors, year);
-        BookCopy copy = new BookCopy(book);
-        Library library = new Library();
+        Library library = makeLibrary();
         library.buy(book);
         library.buy(book2);
         library.buy(book3);
@@ -355,7 +345,7 @@ public class LibraryTest {
      */
     @Test
     public void testLose() {
-        
+        assert true;
     }
     /* Copyright (c) 2016 MIT 6.005 course staff, all rights reserved.
      * Redistribution of original or derived work requires explicit permission.

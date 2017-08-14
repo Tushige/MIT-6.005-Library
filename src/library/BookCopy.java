@@ -84,26 +84,26 @@ public class BookCopy {
         return book.toString() + "\n" + conditionStr;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) return true;
-        else if (!(that instanceof BookCopy)) return false;
-        BookCopy b2 = (BookCopy) that;
-        return this.book.equals(b2.book) && this.condition==b2.condition;
-    }
-    
+    // @Override
+    // public boolean equals(Object that) {
+    //     if (this == that) return true;
+    //     else if (!(that instanceof BookCopy)) return false;
+    //     BookCopy b2 = (BookCopy) that;
+    //     return this.book.equals(b2.book) && this.condition==b2.condition;
+    // }
+
     /**
      * hashing strategy taken from effective java : unit 9
      */
-    @Override
-    public int hashCode() {
-        int result = 17;
-        result = 31 * result + book.hashCode();
-        if (condition == Condition.DAMAGED) {
-            result = 31 * result + 1;
-        }
-        return result;
-    }
+    // @Override
+    // public int hashCode() {
+    //     int result = 17;
+    //     result = 31 * result + book.hashCode();
+    //     if (condition == Condition.DAMAGED) {
+    //         result = 31 * result + 1;
+    //     }
+    //     return result;
+    // }
 
 
     /* Copyright (c) 2016 MIT 6.005 course staff, all rights reserved.

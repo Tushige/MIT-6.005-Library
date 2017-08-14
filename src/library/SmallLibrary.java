@@ -3,13 +3,16 @@ package library;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
+
+import java.lang.IllegalArgumentException;
 
 /**
  * SmallLibrary represents a small collection of books, like a single person's home collection.
  */
 public class SmallLibrary implements Library {
 
-    // This rep is required! 
+    // This rep is required!
     // Do not change the types of inLibrary or checkedOut,
     // and don't add or remove any other fields.
     // (BigLibrary is where you can create your own rep for
@@ -30,52 +33,110 @@ public class SmallLibrary implements Library {
     // TODO: safety from rep exposure argument
 
     public SmallLibrary() {
-        throw new RuntimeException("not implemented yet");
+        inLibrary = new HashSet<>();
+        checkedOut = new HashSet<>();
+        checkRep();
     }
 
     // assert the rep invariant
     private void checkRep() {
-        throw new RuntimeException("not implemented yet");
+        // same BookCopy cannot be both in inLibrary and checkedOut
+        for (BookCopy copy : checkedOut) {
+            assert !inLibrary.contains(copy);
+        }
     }
 
     @Override
     public BookCopy buy(Book book) {
-        throw new RuntimeException("not implemented yet");
+        if (book == null) {
+            throw new IllegalArgumentException("book cannot be null");
+        }
+        BookCopy newCopy = new BookCopy(book);
+        inLibrary.add(newCopy);
+        checkRep();
+        return newCopy;
     }
 
     @Override
     public void checkout(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (copy == null || !inLibrary.contains(copy)) {
+            throw new IllegalArgumentException("book copy not in library");
+        }
+        inLibrary.remove(copy);
+        checkedOut.add(copy);
+        checkRep();
     }
 
     @Override
     public void checkin(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (copy == null) {
+            throw new IllegalArgumentException("book copy cannot be null");
+        }
+        if (!checkedOut.contains(copy)) {
+            throw new IllegalArgumentException("book copy needs to be checked out");
+        }
+        checkedOut.remove(copy);
+        inLibrary.add(copy);
+        checkRep();
     }
 
     @Override
     public boolean isAvailable(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (copy == null) {
+            throw new IllegalArgumentException("book copy cannot be null");
+        }
+        return inLibrary.contains(copy);
     }
 
     @Override
     public Set<BookCopy> allCopies(Book book) {
-        throw new RuntimeException("not implemented yet");
+        if (book == null) {
+            throw new IllegalArgumentException("book object cannot benull");
+        }
+        Set<BookCopy> allBookCopies = new HashSet<>();
+        // get all available copies
+        for (BookCopy copy : inLibrary) {
+            if (copy.getBook().equals(book)) {
+                allBookCopies.add(copy);
+            }
+        }
+        // get all checkedOutCopies
+        for (BookCopy copy : checkedOut) {
+            if (copy.getBook().equals(book)) {
+                allBookCopies.add(copy);
+            }
+        }
+        return allBookCopies;
     }
 
     @Override
     public Set<BookCopy> availableCopies(Book book) {
-        throw new RuntimeException("not implemented yet");
+        if (book == null) {
+            throw new IllegalArgumentException("book object cannot be null");
+        }
+        Set<BookCopy> availableCopies = new HashSet<>();
+        // get all available copies
+        for (BookCopy copy : inLibrary) {
+            if (copy.getBook().equals(book)) {
+                availableCopies.add(copy);
+            }
+        }
+        return availableCopies;
     }
 
     @Override
     public List<Book> find(String query) {
-        throw new RuntimeException("not implemented yet");
+        return new ArrayList<Book>();
     }
 
     @Override
     public void lose(BookCopy copy) {
-        throw new RuntimeException("not implemented yet");
+        if (copy == null) {
+            throw new IllegalArgumentException("book copy cannot be null");
+        }
+        inLibrary.remove(copy);
+        checkedOut.remove(copy);
+        checkRep();
     }
 
     // uncomment the following methods if you need to implement equals and hashCode,
