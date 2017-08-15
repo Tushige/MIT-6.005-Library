@@ -1,7 +1,9 @@
 package library;
 
 import java.util.List;
+import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -126,9 +128,37 @@ public class SmallLibrary implements Library {
 
     @Override
     public List<Book> find(String query) {
-        return new ArrayList<Book>();
+        Set<Book> matchingBooksSet = new HashSet<Book>();
+        for (BookCopy copy : inLibrary) {
+            Book book = copy.getBook();
+            String title = book.getTitle();
+            // exact title match
+            if ( (title.equals(query) || query.lastIndexOf(title) > -1) && !matchingBooksSet.contains(book)) {
+                matchingBooksSet.add(book);
+                continue;           
+            }
+            List<String> authors = book.getAuthors();
+            for (String author : authors) {
+                // exact author match
+                if ( (author.equals(query) || query.lastIndexOf(author) > -1) && !matchingBooksSet.contains(book)) {
+                    matchingBooksSet.add(book);
+                    break;
+                }
+            }
+        }
+        List<Book> matchedBooks = new ArrayList<Book>(matchingBooksSet);
+        Collections.sort(matchedBooks, new SortyByQueryMatch());
+        return matchedBooks;
     }
-
+    class SortyByQueryMatch implements Comparator<Book> {
+        @Override
+        public int compare(Book a, Book b) {
+            if (a.getTitle().equals(b.getTitle()) && a.getAuthors().equals(b.getAuthors())) {
+                return -a.getYear() + b.getYear();
+            }
+            return 0;
+        }
+    }
     @Override
     public void lose(BookCopy copy) {
         if (copy == null) {

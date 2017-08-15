@@ -32,7 +32,7 @@ public class BookCopyTest {
 
         BookCopy copy = new BookCopy(book);
         assertEquals(book, copy.getBook());
-        assertEquals("initally book is in good condition", 0, copy.getCondition());
+        assertEquals("initally book is in good condition", BookCopy.Condition.GOOD, copy.getCondition());
     }
     @Test
     public void testBookCopySetCondition() {
@@ -57,7 +57,7 @@ public class BookCopyTest {
 
         BookCopy copy = new BookCopy(book);
         BookCopy copy2 = new BookCopy(book);
-        assertEquals("copy and copy2 are equal book copies", copy, copy2);
+        assertNotEquals("copy and copy2 are not equal book copies", copy, copy2);
     }
 
     /* Copyright (c) 2016 MIT 6.005 course staff, all rights reserved.

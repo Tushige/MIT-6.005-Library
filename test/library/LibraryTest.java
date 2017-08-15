@@ -81,7 +81,7 @@ public class LibraryTest {
      *        multiple books with same title but different publication dates
      *        multiple books with same author but different publication dates
      *        test that returned list has no duplicates
-     *
+     * lose : lose one copy out of multiple
      */
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
@@ -179,15 +179,11 @@ public class LibraryTest {
      *************************/
     @Test
     public void testFindEmptyLibrary() {
-        String title = "Darwin's Radio";
-        List<String> authors = Arrays.asList("Greg Bear");
-        int year = 2000;
-        Book book = new Book(title, authors, year);
-
         Library library = makeLibrary();
         List<Book> matchedBooks = library.find("non-existent book");
         assertTrue("expected no match", matchedBooks.isEmpty());
     }
+    
     @Test
     public void testFindEmptyMatch() {
         String title = "Darwin's Radio";
@@ -202,6 +198,7 @@ public class LibraryTest {
         List<Book> matchedBooks = library.find("non-existent book");
         assertTrue("expected no match", matchedBooks.isEmpty());
     }
+    
     @Test
     public void testFindExactTitleMatchSingle() {
         String title = "Darwin's Radio";
@@ -217,6 +214,7 @@ public class LibraryTest {
         assertEquals("expected 1 match", 1, matchedBooks.size());
         assertTrue("expected Darwin", matchedBooks.contains(book));
     }
+    
     @Test
     public void testFindExactTitleMatchMultiple() {
         String title = "Darwin's Radio";
@@ -235,6 +233,7 @@ public class LibraryTest {
         assertTrue("expected Darwin by Bear", matchedBooks.contains(book));
         assertTrue("expected Darwin by Patrick", matchedBooks.contains(book2));
     }
+    
     @Test
     public void testFindExactAuthorMatchSingle() {
         String title = "Darwin's Radio";
@@ -249,6 +248,7 @@ public class LibraryTest {
         assertEquals("expected 1 match", 1, matchedBooks.size());
         assertTrue("expected Darwin", matchedBooks.contains(book));
     }
+    
     @Test
     public void testFindExactAuthorMatchMultiple() {
         String title = "Darwin's Radio";
@@ -266,40 +266,43 @@ public class LibraryTest {
         assertTrue("expected Darwin", matchedBooks.contains(book));
         assertTrue("expected Darwin sequel", matchedBooks.contains(book2));
     }
-    @Test
-    public void testFindNonExactTitleMatchMultiple() {
-        String title = "Darwin's Radio";
-        String title2 = "Darwin's Radio sequel";
-        List<String> authors = Arrays.asList("Greg Bear");
-        int year = 2000;
-        Book book = new Book(title, authors, year);
-        Book book2 = new Book(title2, authors, year);
-        Library library = makeLibrary();
-        library.buy(book);
-        library.buy(book2);
-        library.buy(book);
-        List<Book> matchedBooks = library.find("Radio");
-        assertEquals("expected 2 matches", 2, matchedBooks.size());
-        assertTrue("expected Darwin", matchedBooks.contains(book));
-        assertTrue("expected Darwin sequel", matchedBooks.contains(book2));
-    }
-    @Test
-    public void testFindNonExactAuthorMatchMultiple() {
-        String title = "Darwin's Radio";
-        String title2 = "Darwin's Radio sequel";
-        List<String> authors = Arrays.asList("Greg Bear");
-        int year = 2000;
-        Book book = new Book(title, authors, year);
-        Book book2 = new Book(title2, authors, year);
-        Library library = makeLibrary();
-        library.buy(book);
-        library.buy(book2);
-        library.buy(book);
-        List<Book> matchedBooks = library.find("Greg");
-        assertEquals("expected 2 matches", 2, matchedBooks.size());
-        assertTrue("expected Darwin", matchedBooks.contains(book));
-        assertTrue("expected Darwin sequel", matchedBooks.contains(book2));
-    }
+    
+//    @Test
+//    public void testFindNonExactTitleMatchMultiple() {
+//        String title = "Darwin's Radio";
+//        String title2 = "Darwin's Radio sequel";
+//        List<String> authors = Arrays.asList("Greg Bear");
+//        int year = 2000;
+//        Book book = new Book(title, authors, year);
+//        Book book2 = new Book(title2, authors, year);
+//        Library library = makeLibrary();
+//        library.buy(book);
+//        library.buy(book2);
+//        library.buy(book);
+//        List<Book> matchedBooks = library.find("Radio");
+//        assertEquals("expected 2 matches", 2, matchedBooks.size());
+//        assertTrue("expected Darwin", matchedBooks.contains(book));
+//        assertTrue("expected Darwin sequel", matchedBooks.contains(book2));
+//    }
+    
+//    @Test
+//    public void testFindNonExactAuthorMatchMultiple() {
+//        String title = "Darwin's Radio";
+//        String title2 = "Darwin's Radio sequel";
+//        List<String> authors = Arrays.asList("Greg Bear");
+//        int year = 2000;
+//        Book book = new Book(title, authors, year);
+//        Book book2 = new Book(title2, authors, year);
+//        Library library = makeLibrary();
+//        library.buy(book);
+//        library.buy(book2);
+//        library.buy(book);
+//        List<Book> matchedBooks = library.find("Greg");
+//        assertEquals("expected 2 matches", 2, matchedBooks.size());
+//        assertTrue("expected Darwin", matchedBooks.contains(book));
+//        assertTrue("expected Darwin sequel", matchedBooks.contains(book2));
+//    }
+    
     @Test
     public void testFindSameTitleAuthorDiffYearOrdererdByNew() {
         String title = "Darwin's Radio";
@@ -311,41 +314,61 @@ public class LibraryTest {
         Book book2 = new Book(title, authors, year2);
         Book book3 = new Book(title, authors, year3);
         Library library = makeLibrary();
-        library.buy(book);
-        library.buy(book2);
         library.buy(book3);
-        List<Book> matchedBooks = library.find("Greg");
-        assertEquals("expected 3 matches", 3, matchedBooks.size());
-        assertEquals("expected Darwin 2000", book, matchedBooks.get(0));
-        assertEquals("expected Darwin 2001", book2, matchedBooks.get(1));
-        assertEquals("expected Darwin 2002", book3, matchedBooks.get(2));
-    }
-    @Test
-    public void testFindDecreasingMatchOrderByTitle() {
-        String title = "Darwin's Rad";
-        String title2 = "Darwin's Radio";
-        String title3 = "Darwin's Radio part 3";
-        List<String> authors = Arrays.asList("Greg Bear");
-        int year = 2000;
-        Book book = new Book(title, authors, year);
-        Book book2 = new Book(title2, authors, year);
-        Book book3 = new Book(title3, authors, year);
-        Library library = makeLibrary();
-        library.buy(book);
         library.buy(book2);
-        library.buy(book3);
-        List<Book> matchedBooks = library.find("Darwin's Rad");
+        library.buy(book);
+        List<Book> matchedBooks = library.find("Greg Bear");
         assertEquals("expected 3 matches", 3, matchedBooks.size());
-        assertEquals("expected Darwin 2000", book, matchedBooks.get(0));
+        assertEquals("expected Darwin 2002", book3, matchedBooks.get(0));
         assertEquals("expected Darwin 2001", book2, matchedBooks.get(1));
-        assertEquals("expected Darwin 2002", book3, matchedBooks.get(2));
+        assertEquals("expected Darwin 2000", book, matchedBooks.get(2));
     }
+    
+//    @Test
+//    public void testFindDecreasingMatchOrderByTitle() {
+//        String title = "Darwin's Rad";
+//        String title2 = "Darwin's Radio";
+//        String title3 = "Darwin's Radio part 3";
+//        List<String> authors = Arrays.asList("Greg Bear");
+//        int year = 2000;
+//        Book book = new Book(title, authors, year);
+//        Book book2 = new Book(title2, authors, year);
+//        Book book3 = new Book(title3, authors, year);
+//        Library library = makeLibrary();
+//        library.buy(book);
+//        library.buy(book2);
+//        library.buy(book3);
+//        List<Book> matchedBooks = library.find("Darwin's Rad");
+//        assertEquals("expected 3 matches", 3, matchedBooks.size());
+//        assertEquals("expected Darwin 2000", book, matchedBooks.get(0));
+//        assertEquals("expected Darwin 2001", book2, matchedBooks.get(1));
+//        assertEquals("expected Darwin 2002", book3, matchedBooks.get(2));
+//    }
+    
     /**
      * lose() tests
      */
     @Test
     public void testLose() {
-        assert true;
+        String title = "Darwin's Rad";
+        List<String> authors = Arrays.asList("Greg Bear");
+        int year = 2000;
+        Book book = new Book(title, authors, year);
+        Library library = makeLibrary();
+        BookCopy copy1 = library.buy(book);
+        BookCopy copy2 = library.buy(book);
+        BookCopy copy3 = library.buy(book);
+        library.lose(copy1);
+        Set<BookCopy> allCopies = library.allCopies(book);
+        assertEquals("there are 2 copies of Darwin", 2, allCopies.size());
+        assertFalse("copy1 is not in library", allCopies.contains(copy1));
+        assertTrue("copy2 is in library", allCopies.contains(copy2));
+        assertTrue("copy3 is in library", allCopies.contains(copy3));
+        
+        library.lose(copy2);
+        library.lose(copy3);
+        allCopies = library.allCopies(book);
+        assertEquals("there are 0 copies of Darwin", 0, allCopies.size());
     }
     /* Copyright (c) 2016 MIT 6.005 course staff, all rights reserved.
      * Redistribution of original or derived work requires explicit permission.
